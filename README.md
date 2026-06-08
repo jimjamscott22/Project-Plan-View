@@ -5,10 +5,10 @@ A simple, local-first webpage that displays all my project ideas in one place. B
 ## What's inside
 
 | File | Purpose |
-|---|---|
-| `index.html`        | The viewer app — open it directly in any browser. |
-| `projects.js`       | Auto-generated data file (`window.PROJECTS_DATA = {...}`). The HTML loads this on page load. |
-| `projects.json`     | Same data in plain JSON form, kept in sync for any future tooling or scripts. |
+| --- | --- |
+| `index.html` | The viewer app — open it directly in any browser. |
+| `projects.js` | Auto-generated data file (`window.PROJECTS_DATA = {...}`). The HTML loads this on page load. |
+| `projects.json` | Same data in plain JSON form, kept in sync for any future tooling or scripts. |
 | `build_manifest.py` | Regenerator script. Reads the markdown plans and rewrites both data files. |
 
 ## How to use it
@@ -25,13 +25,17 @@ The viewer works straight from `file://` (no local server needed) because `proje
 ## Adding a new project plan
 
 1. Drop the new `.md` file into the source folder (currently `C:\Users\jimja\OneDrive - Cayuga Community College\Documents\Code\Project Plan Files`).
-2. Open `build_manifest.py` and add a one-liner to the `PROJECTS` list:
+2. Optional: add frontmatter if you want to override the generated card details:
 
-   ```python
-   ("My-New-Plan.md", "Display Title For The Card", "Idea", ["Python", "Web"]),
+   ```markdown
+   ---
+   title: Display Title For The Card
+   status: Idea
+   tags: [Python, Web]
+   ---
    ```
 
-   - The fourth field is optional — pass `None` and the script auto-detects tags from the file's content.
+   If there is no frontmatter, the script uses the first markdown heading as the title, defaults the status to `Idea`, and auto-detects tags from the file content.
 3. Run the script:
 
    ```bash
@@ -50,7 +54,6 @@ The viewer works straight from `file://` (no local server needed) because `proje
 
 ## Roadmap ideas
 
-- Replace the hardcoded `PROJECTS` list in `build_manifest.py` with a folder scan, so new plans need zero code changes.
 - Add a `regenerate.bat` so refreshing the manifest is a double-click.
 - Optional per-project "last touched" timestamp from file mtime.
 - Export filtered view as a printable PDF.
