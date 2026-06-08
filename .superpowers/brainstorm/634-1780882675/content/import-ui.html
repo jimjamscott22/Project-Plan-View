@@ -1,0 +1,97 @@
+<h2>Import Panel Design</h2>
+<p class="subtitle">This panel slides open from the header. Which tab layout feels right?</p>
+
+<div class="options">
+
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Two tabs: Add Files / Scan Folder</h3>
+      <div class="mockup" style="margin-top:12px">
+        <div class="mockup-header">Project Plan Hub · import panel</div>
+        <div class="mockup-body" style="padding:0;font-size:13px">
+          <!-- simulated header -->
+          <div style="background:#161a22;border-bottom:1px solid #262d3b;padding:12px 20px;display:flex;gap:10px;align-items:center">
+            <span style="width:10px;height:10px;border-radius:3px;background:linear-gradient(135deg,#6c63ff,#8b8cff 55%,#ffb86b);display:inline-block"></span>
+            <strong style="color:#e6e9f0;font-size:14px">Project Plan Hub</strong>
+            <span style="flex:1"></span>
+            <span style="background:#1f2240;border:1px solid #8b8cff;color:#8b8cff;padding:5px 12px;border-radius:7px;font-size:12px">⬆ Import</span>
+            <span style="background:#1c2230;border:1px solid #262d3b;color:#a3aabb;padding:5px 12px;border-radius:7px;font-size:12px">Expand all</span>
+            <span style="background:#1c2230;border:1px solid #262d3b;color:#a3aabb;padding:5px 12px;border-radius:7px;font-size:12px">☀ Light</span>
+          </div>
+          <!-- import panel -->
+          <div style="background:#0e1014;border-bottom:1px solid #262d3b;padding:16px 20px">
+            <!-- tabs -->
+            <div style="display:flex;gap:4px;margin-bottom:14px">
+              <span style="background:#8b8cff;color:#fff;padding:6px 16px;border-radius:6px;font-size:12px;font-weight:600">Add Files</span>
+              <span style="background:#1c2230;color:#707892;padding:6px 16px;border-radius:6px;font-size:12px">Scan Folder</span>
+            </div>
+            <!-- file drop zone -->
+            <div style="border:1.5px dashed #3a3f55;border-radius:10px;padding:24px;text-align:center;background:#161a22">
+              <div style="color:#8b8cff;font-size:22px;margin-bottom:6px">📄</div>
+              <div style="color:#e6e9f0;font-size:13px;margin-bottom:4px">Drop .md files here or <span style="color:#8b8cff;text-decoration:underline;cursor:pointer">browse</span></div>
+              <div style="color:#707892;font-size:11px">Supports multiple files at once</div>
+            </div>
+          </div>
+          <!-- cards below (faded) -->
+          <div style="padding:12px 20px;opacity:.4">
+            <div style="background:#161a22;border:1px solid #262d3b;border-radius:10px;padding:14px;margin-bottom:8px">
+              <span style="color:#e6e9f0;font-size:13px;font-weight:600">AI Packet Analyzer</span>
+              <span style="background:#0d2c40;color:#7dc5ff;font-size:10px;padding:2px 8px;border-radius:999px;margin-left:8px">In Progress</span>
+            </div>
+            <div style="background:#161a22;border:1px solid #262d3b;border-radius:10px;padding:14px">
+              <span style="color:#e6e9f0;font-size:13px;font-weight:600">Apple Health Analyzer</span>
+              <span style="background:#3a2e0b;color:#f4c25a;font-size:10px;padding:2px 8px;border-radius:999px;margin-left:8px">Idea</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Single panel: both options side by side</h3>
+      <div class="mockup" style="margin-top:12px">
+        <div class="mockup-header">Project Plan Hub · import panel</div>
+        <div class="mockup-body" style="padding:0;font-size:13px">
+          <div style="background:#161a22;border-bottom:1px solid #262d3b;padding:12px 20px;display:flex;gap:10px;align-items:center">
+            <span style="width:10px;height:10px;border-radius:3px;background:linear-gradient(135deg,#6c63ff,#8b8cff 55%,#ffb86b);display:inline-block"></span>
+            <strong style="color:#e6e9f0;font-size:14px">Project Plan Hub</strong>
+            <span style="flex:1"></span>
+            <span style="background:#1f2240;border:1px solid #8b8cff;color:#8b8cff;padding:5px 12px;border-radius:7px;font-size:12px">⬆ Import</span>
+            <span style="background:#1c2230;border:1px solid #262d3b;color:#a3aabb;padding:5px 12px;border-radius:7px;font-size:12px">Expand all</span>
+            <span style="background:#1c2230;border:1px solid #262d3b;color:#a3aabb;padding:5px 12px;border-radius:7px;font-size:12px">☀ Light</span>
+          </div>
+          <!-- side by side panel -->
+          <div style="background:#0e1014;border-bottom:1px solid #262d3b;padding:16px 20px;display:grid;grid-template-columns:1fr 1fr;gap:14px">
+            <div>
+              <div style="color:#a3aabb;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px">Add Files</div>
+              <div style="border:1.5px dashed #3a3f55;border-radius:10px;padding:20px;text-align:center;background:#161a22">
+                <div style="color:#8b8cff;font-size:20px;margin-bottom:5px">📄</div>
+                <div style="color:#e6e9f0;font-size:12px;margin-bottom:3px">Drop .md files or <span style="color:#8b8cff">browse</span></div>
+                <div style="color:#707892;font-size:11px">Multiple files OK</div>
+              </div>
+            </div>
+            <div>
+              <div style="color:#a3aabb;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px">Scan Folder</div>
+              <div style="background:#161a22;border:1px solid #262d3b;border-radius:10px;padding:14px">
+                <div style="color:#707892;font-size:11px;margin-bottom:6px">Folder path on this machine</div>
+                <div style="background:#0e1014;border:1px solid #3a3f55;border-radius:6px;padding:8px 10px;color:#a3aabb;font-size:12px;font-family:monospace;margin-bottom:10px">/home/user/projects/plans</div>
+                <div style="background:#1f2240;border:1px solid #8b8cff;color:#8b8cff;padding:7px;border-radius:6px;font-size:12px;text-align:center;cursor:pointer">Scan Folder</div>
+              </div>
+            </div>
+          </div>
+          <div style="padding:12px 20px;opacity:.4">
+            <div style="background:#161a22;border:1px solid #262d3b;border-radius:10px;padding:14px;margin-bottom:8px">
+              <span style="color:#e6e9f0;font-size:13px;font-weight:600">AI Packet Analyzer</span>
+              <span style="background:#0d2c40;color:#7dc5ff;font-size:10px;padding:2px 8px;border-radius:999px;margin-left:8px">In Progress</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

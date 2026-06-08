@@ -1,0 +1,61 @@
+<h2>Three Directions for Project Plan Hub</h2>
+<p class="subtitle">Pick the one that fits how you want to work — or tell me what you'd change.</p>
+
+<div class="options">
+
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>LAN Web App <span style="font-size:12px;opacity:.6;font-weight:normal;">(Recommended)</span></h3>
+      <p>A small FastAPI backend runs on the same machine as your MariaDB server. All your project data lives in the DB. Every device on your LAN opens <code>http://homeserver:PORT</code> in a browser and sees everything.</p>
+      <ul>
+        <li>Import markdown files via drag-and-drop or folder scan from the UI</li>
+        <li>Status changes sync across all devices (no more localStorage)</li>
+        <li>Add/edit projects from any machine</li>
+        <li>Works on Windows &amp; Linux (Python + browser)</li>
+        <li>No per-machine setup after the server is running</li>
+      </ul>
+      <div class="pros-cons">
+        <div class="pros"><h4>Pros</h4><ul><li>Solves everything in one shot</li><li>Reuses your existing MariaDB</li><li>Real multi-device sync</li></ul></div>
+        <div class="cons"><h4>Cons</h4><ul><li>Requires a running server process</li><li>More moving parts than today</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Improved Static App + Config File</h3>
+      <p>Keep the current file:// approach but make it cross-platform and smarter. A <code>config.json</code> stores one or more folder paths. The Python script reads it so no more hardcoded OneDrive path. A <code>.bat</code> / <code>.sh</code> launcher rebuilds + opens the browser in one click.</p>
+      <ul>
+        <li>Multiple scan folders supported</li>
+        <li>Cross-platform paths (Linux / Windows)</li>
+        <li>Optional: push to MariaDB after each build for backup</li>
+        <li>No server needed</li>
+      </ul>
+      <div class="pros-cons">
+        <div class="pros"><h4>Pros</h4><ul><li>Minimal change from today</li><li>Still works offline / no network</li></ul></div>
+        <div class="cons"><h4>Cons</h4><ul><li>Still need to run the script on each machine</li><li>No real cross-device sync</li><li>Status stays in localStorage (per browser)</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="c" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Browser-Native File Import</h3>
+      <p>Rewrite the viewer to use the browser's <strong>File System Access API</strong> — a folder picker built right into the page. No Python script. Pick a folder, the browser reads and parses the markdown files directly, stores them in IndexedDB.</p>
+      <ul>
+        <li>Zero dependencies — just open the HTML file</li>
+        <li>Works on any OS with a modern browser</li>
+        <li>Drag-and-drop individual files also supported</li>
+        <li>Optional: sync to MariaDB via a tiny REST endpoint</li>
+      </ul>
+      <div class="pros-cons">
+        <div class="pros"><h4>Pros</h4><ul><li>No Python required at all</li><li>Truly cross-platform</li></ul></div>
+        <div class="cons"><h4>Cons</h4><ul><li>IndexedDB is per-browser (not shared across devices without the sync API)</li><li>File System Access API not available on all browsers</li><li>Still need the sync endpoint for true multi-device</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+</div>
