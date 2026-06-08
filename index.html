@@ -398,6 +398,77 @@
     .card-right { flex-direction: row; align-items: center; justify-content: flex-start; }
     .card-body-inner { padding: 18px 18px 24px; }
   }
+
+/* ─────── Import panel ─────── */
+.import-panel {
+  border-bottom: 1px solid var(--border);
+  background: var(--bg);
+}
+.import-inner {
+  max-width: 1100px; margin: 0 auto;
+  padding: 16px 24px;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+}
+.import-col > .label {
+  display: block; margin-bottom: 10px;
+}
+.drop-zone {
+  border: 1.5px dashed var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  text-align: center;
+  background: var(--bg-elev);
+  cursor: pointer;
+  transition: border-color .15s;
+}
+.drop-zone.drag-over { border-color: var(--accent); }
+.drop-zone .drop-icon { font-size: 24px; margin-bottom: 8px; }
+.drop-zone p { margin: 4px 0; color: var(--text); font-size: 13px; }
+.link-btn {
+  background: none; border: none; color: var(--accent);
+  cursor: pointer; font: inherit; font-size: 13px;
+  text-decoration: underline; padding: 0;
+}
+.folder-scan {
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  display: flex; flex-direction: column; gap: 10px;
+}
+.folder-input {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  padding: 8px 10px;
+  font-family: var(--mono); font-size: 13px;
+  width: 100%;
+  box-sizing: border-box;
+}
+.folder-input:focus { outline: none; border-color: var(--accent); }
+.import-action-btn {
+  background: var(--accent-soft);
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  border-radius: var(--radius-sm);
+  padding: 8px;
+  font: inherit; font-size: 13px;
+  cursor: pointer;
+  transition: background .15s, color .15s;
+}
+.import-action-btn:hover { background: var(--accent); color: #fff; }
+.import-msg {
+  max-width: 1100px; margin: 0 auto;
+  padding: 0 24px 12px;
+  font-size: 13px; color: var(--text-dim);
+  min-height: 20px;
+}
+.import-msg.ok { color: var(--status-done-fg); }
+.import-msg.err { color: var(--status-insp-fg); }
+@media (max-width: 600px) {
+  .import-inner { grid-template-columns: 1fr; padding-left: 16px; padding-right: 16px; }
+}
 </style>
 </head>
 <body>
@@ -410,6 +481,9 @@
       <small id="metaCount">loading…</small>
     </div>
     <div class="header-spacer"></div>
+    <button class="icon-btn" id="importBtn" title="Import projects">
+      ⬆ Import
+    </button>
     <button class="icon-btn" id="expandAllBtn" title="Expand / collapse all">
       <span id="expandAllLbl">Expand all</span>
     </button>
@@ -419,6 +493,29 @@
     </button>
   </div>
 </header>
+
+<section id="importPanel" class="import-panel" hidden>
+  <div class="import-inner">
+    <div class="import-col">
+      <span class="label">Add Files</span>
+      <div class="drop-zone" id="dropZone">
+        <input type="file" id="fileInput" multiple accept=".md" hidden>
+        <div class="drop-icon">📄</div>
+        <p>Drop .md files here or <button class="link-btn" id="browseBtn">browse</button></p>
+        <p style="font-size:11px;color:var(--text-muted)">Supports multiple files at once</p>
+      </div>
+    </div>
+    <div class="import-col">
+      <span class="label">Scan Folder</span>
+      <div class="folder-scan">
+        <p style="font-size:11px;color:var(--text-muted);margin:0">Folder path on this machine</p>
+        <input id="folderPath" class="folder-input" type="text" placeholder="/home/user/projects">
+        <button class="import-action-btn" id="scanBtn">Scan Folder</button>
+      </div>
+    </div>
+  </div>
+  <div id="importMsg" class="import-msg"></div>
+</section>
 
 <section class="toolbar">
   <div class="search-wrap">
@@ -451,7 +548,6 @@ const STATE = {
   activeTags: new Set(),
   activeStatuses: new Set(),
   openCards: new Set(),
-  statusOverrides: JSON.parse(localStorage.getItem('pph.statusOverrides') || '{}'),
 };
 
 const STATUS_VALUES = ['Idea', 'In Progress', 'Done', 'Reference', 'Inspiration'];
@@ -474,13 +570,9 @@ document.getElementById('themeBtn').onclick = () => {
 
 /* ─────── Data loading ─────── */
 async function loadData() {
-  if (window.PROJECTS_DATA) return window.PROJECTS_DATA;
-  // Fallback: try fetch (works when served by a local server)
-  try {
-    const r = await fetch('projects.json');
-    if (r.ok) return await r.json();
-  } catch (e) { /* ignored */ }
-  return null;
+  const r = await fetch('/api/projects');
+  if (!r.ok) throw new Error(`API error: ${r.status}`);
+  return await r.json();
 }
 
 /* ─────── Markdown rendering ─────── */
@@ -542,12 +634,16 @@ function buildFilters() {
 
 /* ─────── Status (overridable per project, saved locally) ─────── */
 function currentStatus(p) {
-  return STATE.statusOverrides[p.id] || p.status;
+  return p.status;
 }
 function setStatus(p, newStatus) {
-  if (newStatus === p.status) delete STATE.statusOverrides[p.id];
-  else STATE.statusOverrides[p.id] = newStatus;
-  localStorage.setItem('pph.statusOverrides', JSON.stringify(STATE.statusOverrides));
+  fetch(`/api/projects/${p.id}/status`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ status: newStatus }),
+  }).then(r => {
+    if (r.ok) { p.status = newStatus; render(); }
+  });
 }
 
 /* ─────── Filtering ─────── */
@@ -730,15 +826,94 @@ document.getElementById('expandAllBtn').addEventListener('click', () => {
   render();
 });
 
+/* ─────── Import panel ─────── */
+document.getElementById('importBtn').onclick = () => {
+  const panel = document.getElementById('importPanel');
+  panel.hidden = !panel.hidden;
+};
+
+const dropZone = document.getElementById('dropZone');
+const fileInput = document.getElementById('fileInput');
+
+document.getElementById('browseBtn').onclick = () => fileInput.click();
+
+dropZone.addEventListener('dragover', e => {
+  e.preventDefault();
+  dropZone.classList.add('drag-over');
+});
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+dropZone.addEventListener('drop', async e => {
+  e.preventDefault();
+  dropZone.classList.remove('drag-over');
+  await _uploadFiles(e.dataTransfer.files);
+});
+fileInput.addEventListener('change', async () => {
+  await _uploadFiles(fileInput.files);
+  fileInput.value = '';
+});
+
+async function _uploadFiles(fileList) {
+  const form = new FormData();
+  for (const f of fileList) form.append('files', f);
+  _showImportMsg('Uploading…', '');
+  try {
+    const r = await fetch('/api/projects/import/file', { method: 'POST', body: form });
+    const data = await r.json();
+    if (r.ok) {
+      _showImportMsg(`Added ${data.added} project(s).${data.errors.length ? ' Some errors — check console.' : ''}`, 'ok');
+      if (data.errors.length) console.warn('Import errors:', data.errors);
+      await _refreshProjects();
+    } else {
+      _showImportMsg(`Upload failed: ${data.detail || r.status}`, 'err');
+    }
+  } catch (e) {
+    _showImportMsg('Upload failed — check server connection.', 'err');
+  }
+}
+
+document.getElementById('scanBtn').onclick = async () => {
+  const path = document.getElementById('folderPath').value.trim();
+  if (!path) return;
+  _showImportMsg('Scanning…', '');
+  try {
+    const r = await fetch('/api/projects/import/folder', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ path }),
+    });
+    const data = await r.json();
+    if (r.ok) {
+      _showImportMsg(`Scanned — added ${data.added} project(s).`, 'ok');
+      await _refreshProjects();
+    } else {
+      _showImportMsg(`Error: ${data.detail}`, 'err');
+    }
+  } catch (e) {
+    _showImportMsg('Scan failed — check server connection.', 'err');
+  }
+};
+
+function _showImportMsg(text, cls) {
+  const el = document.getElementById('importMsg');
+  el.textContent = text;
+  el.className = 'import-msg' + (cls ? ' ' + cls : '');
+}
+
+async function _refreshProjects() {
+  STATE.data = await loadData();
+  render();
+}
+
 /* ─────── Boot ─────── */
 (async () => {
-  STATE.data = await loadData();
-  if (!STATE.data) {
+  try {
+    STATE.data = await loadData();
+  } catch (e) {
     document.getElementById('cards').innerHTML = `
       <div class="empty">
-        <h2>Could not load project data</h2>
-        <p>Expected <code>projects.js</code> or <code>projects.json</code> alongside this HTML file.</p>
-        <p>Re-run <code>build_manifest.py</code> to regenerate.</p>
+        <h2>Could not connect to server</h2>
+        <p>Make sure the Project Plan Hub server is running.</p>
+        <p>Start it with: <code>uv run uvicorn server:app --host 0.0.0.0 --port 8000</code></p>
       </div>`;
     document.getElementById('metaCount').textContent = '';
     return;
