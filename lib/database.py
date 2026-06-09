@@ -1,19 +1,30 @@
 import json
 import os
 
-import aiomysql
-from dotenv import load_dotenv
+import importlib
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:  # pragma: no cover - typing only
+    import aiomysql
+
+# dotenv is optional at runtime for environments that set env vars elsewhere.
+try:
+    from dotenv import load_dotenv  # type: ignore
+except Exception:  # pragma: no cover - fallback when python-dotenv not installed
+    def load_dotenv() -> None:  # type: ignore
+        return None
 
 load_dotenv()
 
-_pool: aiomysql.Pool | None = None
+_pool: "aiomysql.Pool | None" = None
 
 _STATUS_ORDER = "FIELD(status,'In Progress','Idea','Reference','Inspiration','Done')"
 
 
-async def _get_pool() -> aiomysql.Pool:
+async def _get_pool() -> "aiomysql.Pool":
     global _pool
     if _pool is None:
+        aiomysql = importlib.import_module("aiomysql")
         _pool = await aiomysql.create_pool(
             host=os.environ["DB_HOST"],
             port=int(os.environ.get("DB_PORT", "3306")),
