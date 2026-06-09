@@ -58,8 +58,16 @@ uv sync
 
 ## Running the app
 
+The easiest way to launch the app is:
+
 ```bash
-uvicorn server:app --reload
+./run.sh
+```
+
+You can also use the underlying launcher directly:
+
+```bash
+uv run python -m launch --reload
 ```
 
 Then open [http://localhost:8000](http://localhost:8000) in your browser. The `--reload` flag restarts the server automatically when you edit Python files.
@@ -67,7 +75,7 @@ Then open [http://localhost:8000](http://localhost:8000) in your browser. The `-
 To bind to a specific host or port:
 
 ```bash
-uvicorn server:app --host 0.0.0.0 --port 8080
+uv run python -m launch --host 0.0.0.0 --port 8080
 ```
 
 ## How to use it
